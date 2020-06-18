@@ -18,7 +18,7 @@ The raspberry PI bash script helps get the raspbian Pi into a kiosk like mode, e
 You can run the script with the following one liner
 
 ```sh
-bash <(curl https://raw.githubusercontent.com/geckoboard/device-scripts/master/raspberrypi)
+bash <(curl https://raw.githubusercontent.com/C4MS/device-scripts/master/raspberrypi)
 ```
 
 Read and follow the instructions
