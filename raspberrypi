@@ -7,7 +7,6 @@ log() {
 
 The program has stopped due to the above error
 If you believe this is a bug, please report it.
-If you are having issues please ask for help from Geckoboard support
 
 Press any key to exit
 EOF
@@ -29,20 +28,20 @@ install_essential_tools() {
   sudo apt install -y chromium-browser unclutter
 }
 
-install_color_emoji() {
-  NOTOEMOJI_ZIPFILE=noto_color_emoji.zip
-  FONT_STORE=$HOME/.local/share/fonts
-  NOTOEMOJI_DIR=noto_color_emoji
+# install_color_emoji() {
+#   NOTOEMOJI_ZIPFILE=noto_color_emoji.zip
+#   FONT_STORE=$HOME/.local/share/fonts
+#   NOTOEMOJI_DIR=noto_color_emoji
 
-  curl -o $NOTOEMOJI_ZIPFILE https://noto-website-2.storage.googleapis.com/pkgs/NotoColorEmoji-unhinted.zip
-  unzip $NOTOEMOJI_ZIPFILE -d $NOTOEMOJI_DIR
+#   curl -o $NOTOEMOJI_ZIPFILE https://noto-website-2.storage.googleapis.com/pkgs/NotoColorEmoji-unhinted.zip
+#   unzip $NOTOEMOJI_ZIPFILE -d $NOTOEMOJI_DIR
 
-  mkdir -p $FONT_STORE
+#   mkdir -p $FONT_STORE
 
-  mv $NOTOEMOJI_DIR/*.ttf $FONT_STORE/
-  rm -r $NOTOEMOJI_DIR || true
-  rm $NOTOEMOJI_ZIPFILE || true
-}
+#   mv $NOTOEMOJI_DIR/*.ttf $FONT_STORE/
+#   rm -r $NOTOEMOJI_DIR || true
+#   rm $NOTOEMOJI_ZIPFILE || true
+# }
 
 install_mscore_fonts() {
   sudo apt install -y ttf-mscorefonts-installer
@@ -65,11 +64,12 @@ check_raspberrypi() {
 install_kiosk_script() {
   AUTOSTART_PATH=$HOME/.config/lxsession/LXDE-pi
   AUTOSTART_FILE=$AUTOSTART_PATH/autostart
-  GECKOBOARD_KIOSK_FILE=$AUTOSTART_PATH/geckoboard_kiosk_mode
+  KIOSK_FILE=$AUTOSTART_PATH/kiosk_mode
+  KIOSK_URL=https://google.com
 
   mkdir -p $AUTOSTART_PATH
 
-cat > $GECKOBOARD_KIOSK_FILE <<EOF
+cat > $KIOSK_FILE <<EOF
 #!/bin/bash
 
 # Turn off screensaver stuff and disable energysaver stuff
@@ -92,10 +92,10 @@ chromium-browser \
 --disable-extensions \
 --start-fullscreen \
 --no-default-browser-check \
-https://app.geckoboard.com/tv
+$KIOSK_URL
 EOF
 
-  chmod +x $GECKOBOARD_KIOSK_FILE
+  chmod +x $KIOSK_FILE
 
   if [[ ! -f $AUTOSTART_FILE ]]; then
     # We are clear to clone the current autostart
@@ -103,13 +103,13 @@ EOF
     cp /etc/xdg/lxsession/LXDE-pi/autostart $AUTOSTART_FILE
 
     log "adding kiosk mode to autostart"
-    echo "@$GECKOBOARD_KIOSK_FILE" >> $AUTOSTART_FILE
+    echo "@$KIOSK_FILE" >> $AUTOSTART_FILE
   else
-    if grep -Fxq "@$GECKOBOARD_KIOSK_FILE" $AUTOSTART_FILE; then
+    if grep -Fxq "@$KIOSK_FILE" $AUTOSTART_FILE; then
       echo "[SKIP] kiosk mode already setup"
     else
       log "adding kiosk mode to autostart"
-      echo "@$GECKOBOARD_KIOSK_FILE" >> $AUTOSTART_FILE
+      echo "@$KIOSK_FILE" >> $AUTOSTART_FILE
     fi
   fi
 }
@@ -121,19 +121,8 @@ disable_underscan() {
 }
 
 
-# Display logo and intro to user
-# ASCII display generated at https://www.ascii-art-generator.org/
-
 cat <<EOF
-   _____ ______ _____ _  ______  ____   ____          _____  _____ 
-  / ____|  ____/ ____| |/ / __ \|  _ \ / __ \   /\   |  __ \|  __ \ 
- | |  __| |__   |    | ' / |  | | |_| | |  | | /  \  | |__| | |  | | 
- | | |_ |  __|  |    |  <  |  | |  _ <| |  | |/ /\ \ |  _  /| |  | | 
- | |__| | |___  |____| ' \ |__| | |_| | |__| / ____ \| | \ \| |__| | 
-  \_____|______\_____|_|\_\____/|____/ \____/_/    \_\_|  \_\_____/ 
 
-
-We will guide you through setting up your device optimized to display Geckoboard.
 Along the way you will have the option to not do some things for which you can just press enter
 
 The questions which will be asked will be just require either y for Yes or n for No
@@ -146,7 +135,7 @@ We will do the following;
  - Install color emoji support
  - Install Microsoft core fonts 
  - Install a script which will disable screensaver/power settings and
-   start chromium at Geckoboard on each startup
+   start chromium on each startup
 
  This process should only take a few minutes
  If you are ready press any key to start
@@ -179,24 +168,15 @@ install_essential_tools > /dev/null
 log "installing mscore fonts"
 install_mscore_fonts > /dev/null
 
-log "installing color emoji support"
-install_color_emoji > /dev/null
+# log "installing color emoji support"
+# install_color_emoji > /dev/null
 
-log "setting up Geckoboard kiosk mode"
+log "setting up kiosk mode"
 install_kiosk_script
 
 cat <<EOF
 
 ************ Setup complete ***********
-
-Check out the send to TV support article on how to pair your device with Geckoboard
-Now you are ready to reboot the raspberry pi.
-
-When raspberry pi next starts up it should display the TV pin code
-
-http://bit.ly/gbontvdoc
-
-You'll be empowering your team to be the best in no time
 
 When you are ready press any key to reboot. 
 EOF
