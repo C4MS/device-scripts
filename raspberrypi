@@ -56,9 +56,9 @@ check_raspberrypi() {
     log "this device doesn't appear to be a raspberry pi" 1
   fi
 
-  if [[ $DESKTOP_SESSION != "LXDE-pi" ]]; then
-    log "this device isn't running a support desktop environment", 1
-  fi
+#   if [[ $DESKTOP_SESSION != "LXDE-pi" ]]; then
+#     log "this device isn't running a support desktop environment", 1
+#   fi
 }
 
 install_kiosk_script() {
